@@ -1,35 +1,38 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 const app = express();
-const mongoose = require('mongoose');
-require('dotenv').config();
+const mongoose = require("mongoose");
+require("dotenv").config();
 // const cors = require('cors');
 const path = require("path");
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-
 app.use(cors());
 app.use(express.json());
 
+//
+const PORT = process.env.PORT || 5000;
+const DB_URI = process.env.DB_URI;
+//check
+app.get("/url", (req, res, next) => {
+  res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
+});
 
-// 
-const PORT = process.env.PORT || 5000
-const DB_URI = process.env.DB_URI
+app.use("/", require("./routes/router"));
 
-
-
-app.use('/', require('./routes/router'));
-
-
+if (process.env.NPM_CONFIG_PRODUCTION === "production") {
+  app.use(express.static("build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "build", "index.html"));
+  });
+}
 
 const Main = async () => {
   try {
     await mongoose.connect(DB_URI);
 
-
     app.listen(PORT, async () => {
-
-      console.log(`server started ON ${PORT}`)
+      console.log(`server started ON ${PORT}`);
     });
   } catch (error) {
     console.log(error);
@@ -62,5 +65,3 @@ const Main = async () => {
 // });
 
 Main();
-
-
