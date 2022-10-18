@@ -20,12 +20,12 @@ app.get("/url", (req, res, next) => {
 
 app.use("/", require("./routes/router"));
 
-if (process.env.NPM_CONFIG_PRODUCTION === "production") {
-  app.use(express.static("build"));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "build", "index.html"));
-  });
-}
+// if (process.env.NPM_CONFIG_PRODUCTION === "production") {
+//   app.use(express.static("build"));
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "build", "index.html"));
+//   });
+// }
 
 const Main = async () => {
   try {
