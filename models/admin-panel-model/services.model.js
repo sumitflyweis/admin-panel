@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const servicesSchema = new mongoose.Schema(
   {
     image: {
-      type: String,
+      data :Buffer,
+    contentType :String
     },
     id: {
       type: String,

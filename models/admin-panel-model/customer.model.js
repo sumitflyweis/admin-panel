@@ -10,7 +10,8 @@ const customerSchema = new mongoose.Schema(
       required: true,
     },
     image: {
-      type: String,
+      data :Buffer,
+    contentType :String
     },
     email: {
       type: String,
