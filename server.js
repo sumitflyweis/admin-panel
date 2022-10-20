@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-var multer = require('multer');
+// var multer = require('multer');
 const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -12,16 +12,16 @@ app.use(cors());
 app.use(express.json());
 
   
-var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-});
+// var storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads')
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, file.fieldname + '-' + Date.now())
+//     }
+// });
   
-var upload = multer({ storage: storage });
+//var upload = multer({ storage: storage });
 //
 const PORT = process.env.PORT || 5000;
 const DB_URI = process.env.DB_URI;
