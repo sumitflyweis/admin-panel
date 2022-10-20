@@ -10,7 +10,7 @@ router.use("/Conection", require("./conectionRoutes"));
 router.use("/horoscope", require("./horoscopeRoutes"));
 router.use("/message", require("./message.routes"));
 router.use("/specification", require("./specificationRoutes"));
-router.use("/auth", require("./admin"));
+router.use("/", require("./admin"));
 router.use("/order", require("./admin-panel-routes/order.routes"));
 router.use("/inventory", require("./admin-panel-routes/inventory.routes"));
 router.use("/banner", require("./bannerRoutes"));
