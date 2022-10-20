@@ -26,9 +26,9 @@ module.exports.addSubCategory = async (req, res) => {
 
   const { subCategory, name } = req.body;
   try {
-    const data = await ManageCategory.findByIdAndUpdate(id,
+    const data = await ManageCategory.findByIdAndUpdate(
       {
-        //_id: ObjectId(req.params.id),
+        _id: ObjectId(req.params.id),
         subCategory,
         name,
       },
