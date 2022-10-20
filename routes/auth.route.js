@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const authController = require('../controllers/auth.controller');
 const { isAuthenticated } = require('../controllers/auth.controller')
-
 const app = require("express");
 const path = require("path");
 var multer = require("multer");

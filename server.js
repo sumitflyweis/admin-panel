@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors");
+ const cors = require("cors");
 // var multer = require('multer');
 const app = express();
 const mongoose = require("mongoose");
@@ -8,7 +8,6 @@ require("dotenv").config();
 const path = require("path");
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-app.use(cors());
 app.use(express.json());
 
   
