@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema(
     variant: {
       type: String,
     },
-    category: [{ type: mongoose.Schema.Types.ObjectId, ref: "ManageCategory" }],
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "ManageCategory" },
   },
   { timestamps: true }
 );
