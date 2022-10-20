@@ -73,7 +73,7 @@ const createUser = async (email_ID, mobile_Number, password) => {
   const newUser = await Admin.create({
     email_ID, mobile_Number,
     password: hashedPassword,
-    otp: otpGenerated,
+    otp: sendSMS(),
   });
   if (!newUser) {
     return [false, 'Unable to sign you up'];
@@ -92,13 +92,13 @@ const createUser = async (email_ID, mobile_Number, password) => {
 module.exports.login = async (req, res) => {
 
   try {
-    const { mobile_Number, password } = req.body;
+    const { email_ID, password } = req.body;
 
-    if (!(mobile_Number && password)) {
+    if (!(email_ID && password)) {
       res.status(400).send("All input is required");
     }
 
-    const user = await Admin.findOne({ mobile_Number });
+    const user = await Admin.findOne({email_ID });
 
     if (!user) res.status(400).json({
       message: 'This Number is not registered'
