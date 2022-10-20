@@ -43,3 +43,20 @@ module.exports.getOrderById = async (req, res) => {
     res.status(400).json(error);
   }
 };
+
+module.exports.deleteOrder = async (req, res) => {
+  try {
+    const data = await Order.findByIdAndDelete({
+      _id: ObjectId(req.params.id),
+    });
+
+    if (!data) {
+      res.status(400).json({ msg: "Id does not exist" });
+    }
+
+    res.status(200).send({ msg: " Delete successfully", data: data });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error, msg: "Id is not created" });
+  }
+};
