@@ -61,6 +61,7 @@ module.exports.updateServices = async (req, res) => {
     }
     res.status(200).json({ message: "Udpate is successfully", data });
   } catch (error) {
+    console.log(error)
     res.status(500).json(error);
   }
 };

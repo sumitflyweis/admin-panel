@@ -5,16 +5,30 @@ module.exports.addDiscount= async (req, res) => {
     var ID = function () {
       return "_" + Math.random().toString(36).substr(2, 9);
     };
+
+const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+function generateString(length) {
+    let result = ' ';
+    const charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result;
+}
+ 
+
     const { id, name ,discountPercentage, couponCode , startingdate, endDate } = req.body;
   
     const data = new Discount({
       id: ID(),
       name:name,
      discountPercentage : discountPercentage,
-     couponCode:couponCode,
+     couponCode: generateString(4),
      startingdate:startingdate,
      endDate:endDate,
-    });
+    });                                           
   
     try {
       const result = await data.save();

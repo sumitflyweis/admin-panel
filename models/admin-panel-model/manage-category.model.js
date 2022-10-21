@@ -17,6 +17,10 @@ const manageCategorySchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    // product2: {
+    //   type: mongoose.SchemaTypes.ObjectId,
+    //   ref: "Product",
+    // },
   },
   { timestamps: true }
 );

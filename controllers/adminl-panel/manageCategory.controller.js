@@ -7,14 +7,14 @@ module.exports.addCategory = async (req, res) => {
       return "_" + Math.random().toString(36).substr(2, 9);
     };
 
-    const { id, name, product, subCategory } = req.body;
+    const { name, product, subCategory } = req.body;
     const data = await ManageCategory.create({
       id: ID(),
       name,
       product,
       subCategory,
     });
-    res.status(200).json({ msg: "customer add successfully", data });
+    res.status(200).json({ msg: "category add successfully", data });
   } catch (error) {
     console.log(error);
     res.status(400).json("Error is occurred");

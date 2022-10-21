@@ -20,10 +20,15 @@ const productSchema = new mongoose.Schema(
     variant: {
       type: String,
     },
-    category: [{ type: mongoose.Schema.Types.ObjectId, ref: "manageCategory" }],
+    category :{
+      type :String
+    },
+    // categoryRef: [{ type: mongoose.Schema.Types.ObjectId, ref: "manageCategory" }],
   },
   { timestamps: true }
 );
 
+
 const Product = mongoose.model("Product", productSchema);
+
 module.exports = Product;

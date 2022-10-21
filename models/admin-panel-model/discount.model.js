@@ -15,7 +15,6 @@ const discountSchema = new mongoose.Schema(
     },
     couponCode: {
       type: String,
-      required: true,
     },
     startingDate: {
       type: String,

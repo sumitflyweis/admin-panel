@@ -17,13 +17,17 @@ module.exports.addProduct = async (req, res) => {
     variant: variant,
     category: category,
   });
-  const data2 = await ManageCategory.findById(category);
+ 
   try {
-    const result = await await data.save();
-    console.log(data2);
-    res.status(200).json({ msg: "product added successfully", result , category : data2 });
+    console.log(category);
+    const result = await (await data.save())
+
+    console.log(category);
+    //const data2=   ManageCategory.findOne({category}).populate('category')
+
+    res.status(200).json({ msg: "product added successfully", result });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json(error);
   }
 };
@@ -40,6 +44,9 @@ module.exports.getProduct = async (req, res) => {
 module.exports.getProductById = async (req, res) => {
   try {
     const data = await Product.findById({ _id: ObjectId(req.params.id) });
+    if (!data) {
+      res.status(400).json({ msg: "Id does not exist" });
+    }
     res.status(200).json({ msg: "product get successfully", data });
   } catch (error) {
     res.status(500).json(error);
@@ -47,11 +54,11 @@ module.exports.getProductById = async (req, res) => {
 };
 
 module.exports.updateProduct = async (req, res) => {
+  const { image, name, mrp, stock, variant, category } = req.body;
+  const id =req.params.id;
   try {
-    const { image, name, mrp, stock, variant, category } = req.body;
-    const id = req.params.id;
 
-    const data = await Product.findByIdAndUpdate(id, {
+    const data = await Product.findByIdAndUpdate(id,{
       image,
       name,
       mrp,
@@ -59,9 +66,13 @@ module.exports.updateProduct = async (req, res) => {
       variant,
       category,
     });
-    const categorys = await ManageCategory.findById({});
+
+    if (!data) {
+      res.status(400).json({ msg: "Id does not exist" });
+    }
     res.status(200).json({ msg: "product update successfully", data });
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
