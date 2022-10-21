@@ -1,5 +1,5 @@
 const express = require("express");
- const cors = require("cors");
+const cors = require("cors");
 // var multer = require('multer');
 const app = express();
 const mongoose = require("mongoose");
@@ -9,17 +9,7 @@ const path = require("path");
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
-
-  
-// var storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads')
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// });
-  
+app.use(cors());
 //var upload = multer({ storage: storage });
 //
 const PORT = process.env.PORT || 5000;
@@ -30,14 +20,6 @@ app.get("/url", (req, res, next) => {
 });
 
 app.use("/", require("./routes/router"));
-
-// if (process.env.NPM_CONFIG_PRODUCTION === "production") {
-//   app.use(express.static("build"));
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.resolve(__dirname, "build", "index.html"));
-//   });
-// }
-
 const Main = async () => {
   try {
     await mongoose.connect(DB_URI);
@@ -49,30 +31,5 @@ const Main = async () => {
     console.log(error);
   }
 };
-
-// //file upload
-
-// const multer = require('multer');
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, '/public/uploads');
-//   },
-
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-//     cb(null, file.fieldname + '-' + uniqueSuffix)
-//   }
-// });
-// const upload1 = multer({ storage: storage }).single("user_file");
-// app.post("/upload", (req, res) => {
-//   console.log(req.data)
-//   upload1(req, res, (err) => {
-//     if (err) {
-//       res.status(400).send("Something went wrong!");
-//     }
-//     res.send(req.file);
-//   });
-// });
 
 Main();

@@ -1,4 +1,5 @@
 const { ObjectId } = require("mongodb");
+const ManageCategory = require("../../models/admin-panel-model/manage-category.model");
 const Product = require("../../models/admin-panel-model/product.model");
 
 module.exports.addProduct = async (req, res) => {
@@ -14,13 +15,15 @@ module.exports.addProduct = async (req, res) => {
     mrp: mrp,
     stock: stock,
     variant: variant,
-    category: category._id,
+    category: category,
   });
-
+  const data2 = await ManageCategory.findById(category);
   try {
-    const result = await data.save();
-    res.status(200).json({ msg: "product added successfully", result });
+    const result = await await data.save();
+    console.log(data2);
+    res.status(200).json({ msg: "product added successfully", result , category : data2 });
   } catch (error) {
+    console.log(error)
     res.status(500).json(error);
   }
 };
@@ -47,7 +50,8 @@ module.exports.updateProduct = async (req, res) => {
   try {
     const { image, name, mrp, stock, variant, category } = req.body;
     const id = req.params.id;
-    const data = await Product.findByIdAndUpdate(id,{
+
+    const data = await Product.findByIdAndUpdate(id, {
       image,
       name,
       mrp,
@@ -55,6 +59,7 @@ module.exports.updateProduct = async (req, res) => {
       variant,
       category,
     });
+    const categorys = await ManageCategory.findById({});
     res.status(200).json({ msg: "product update successfully", data });
   } catch (error) {
     res.status(500).json(error);

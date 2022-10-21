@@ -6,8 +6,7 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     image: {
-      data: Buffer,
-      contentType: String,
+      type: String,
     },
     name: {
       type: String,
@@ -21,7 +20,7 @@ const productSchema = new mongoose.Schema(
     variant: {
       type: String,
     },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "ManageCategory" },
+    category: [{ type: mongoose.Schema.Types.ObjectId, ref: "manageCategory" }],
   },
   { timestamps: true }
 );
