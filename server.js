@@ -9,7 +9,7 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use(cors());
 app.use(express.json());
-
+/////
 //
 const PORT = process.env.PORT || 5000;
 const DB_URI = process.env.DB_URI;
