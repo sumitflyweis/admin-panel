@@ -6,6 +6,6 @@ const userkundliController =require('../controllers/userkundliController')
 router.post("/add-user-kundli", isAuthenticated,  userkundliController.addUserKundli);
 router.put("/update-user-kundli/:id",isAuthenticated, userkundliController.updateKundli);
 router.get("/get-user-kundli", userkundliController.getDetails );
-
+router.delete("/:id" , userkundliController.deleteKundli)
 
 module.exports = router;

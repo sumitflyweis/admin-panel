@@ -13,5 +13,6 @@ router.use("/specification", require("./specificationRoutes"));
 router.use("/admin", require("./admin"));
 router.use("/banner", require("./bannerRoutes"));
 router.use("/notification", require("./usersettingRoutes"));
+router.use("/adminPanel", require("./adminPanel.routes"));
 
 module.exports = router;
