@@ -15,7 +15,7 @@ module.exports.addUserKundli = async (req, res) => {
     res.status(400).json("Error is occured");
   }
 };
-
+//
 module.exports.updateKundli = async (req, res) => {
   let { Image, userName, action } = req.body;
   const id = req.params.id;
