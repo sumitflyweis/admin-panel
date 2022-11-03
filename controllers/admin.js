@@ -70,7 +70,7 @@ module.exports.updateUser = async (req, res) => {
       profile,
     });
 
-    res.status(400).send({ msg: "update successfully", data });
+    res.status(200).send({ msg: "update successfully", data });
   } catch (error) {
     console.log(error);
     res.status(400).send({ msg: "Error", error });
@@ -81,7 +81,7 @@ module.exports.deleteUser = async (req, res) => {
   const id = req.params.id;
   try {
     const data = await Admin.findByIdAndDelete({ _id: id });
-    res.status(400).send({ msg: "Delete successfully", data });
+    res.status(200).send({ msg: "Delete successfully", data });
   } catch (error) {
     console.log(error);
     res.status(400).send({ msg: "Error", error });
