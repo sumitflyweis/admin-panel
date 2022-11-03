@@ -5,13 +5,13 @@ module.exports.addhoroscope = async (req, res) => {
       req.body;
     if (
       !(
-        date ||
-        horoScope ||
-        profession ||
-        emotion ||
-        health ||
-        travel ||
-        love ||
+        date &&
+        horoScope &&
+        profession &&
+        emotion &&
+        health &&
+        travel &&
+        love &&
         luck
       )
     ) {
