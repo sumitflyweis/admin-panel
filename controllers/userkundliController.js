@@ -3,7 +3,7 @@ const Kundli = require("../models/userKundli");
 module.exports.addUserKundli = async (req, res) => {
   try {
     let { Image, userName, action } = req.body;
-    if (Image && userName && action) {
+    if (!(Image && userName && action)) {
       res.status(400).json("required filleds is occured");
     }
     let getDetails = await Kundli.create({ Image, userName, action });
