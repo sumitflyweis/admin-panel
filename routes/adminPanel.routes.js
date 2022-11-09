@@ -5,9 +5,12 @@ const adminPanelController = require("../controllers/AdminPanelController");
 const admin = require("../controllers/admin");
 const kundli = require("../controllers/userkundliController");
 const horoscope = require("../controllers/horoscopr.controller");
+const upload = require("../controllers/middleware/uploads");
 
 router.post("/register", adminPanelController.registerUser);
 router.post("/login", adminPanelController.authUser);
+router.get("/", adminPanelController.getAdminDetail);
+router.put("/update/:id", adminPanelController.updateAdmin);
 router.get(
   "/admin",
   adminPanelController.isAuthenticated2,
@@ -65,5 +68,28 @@ router.delete(
   "/horoscope/:id",
   adminPanelController.isAuthenticated2,
   horoscope.deleteHoroscope
+);
+
+router.post(
+  "/notification",
+  adminPanelController.isAuthenticated2,
+  adminPanelController.addNotification
+);
+
+
+
+
+
+
+
+
+
+
+
+
+router.get(
+  "/notification",
+  adminPanelController.isAuthenticated2,
+  adminPanelController.getNotification
 );
 module.exports = router;

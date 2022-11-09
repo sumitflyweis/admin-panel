@@ -3,13 +3,9 @@ const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const { encrypt, compare } = require("../services/crypto");
 const Admin = require("../models/Admin");
+const expressAsyncHandler = require("express-async-handler");
 const JWTkey = "sumit";
-
-// const generateToken = (id) => {
-//   return jwt.sign({ id }, process.env.JWT_SECRET, {
-//     expiresIn: "30d",
-//   });
-// };
+const Notification = require("../models/notification");
 
 module.exports.isAuthenticated2 = (req, res, next) => {
   if (req.headers.authorization) {
@@ -46,7 +42,9 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("User already exists");
   }
-
+  if (!(name && email && password && mobileNumber)) {
+    res.status(500).send("Fill the required filleds");
+  }
   const user = await AdminPanel.create({
     name,
     email,
@@ -65,6 +63,25 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+module.exports.updateAdmin = asyncHandler(async (req, res) => {
+  const { name, email, password, pic, mobileNumber } = req.body;
+  const id = req.params.id;
+
+  const user = await AdminPanel.findByIdAndUpdate(id, {
+    name,
+    email,
+    password,
+    pic,
+    mobileNumber,
+  });
+
+  if (user) {
+    res.status(200).send({ msg: "update successfully", user });
+  } else {
+    res.status(400);
+    throw new Error("User not found");
+  }
+});
 module.exports.authUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -106,4 +123,49 @@ module.exports.getAllUsersDetails = async (req, res) => {
   }
 };
 
+module.exports.getAdminDetail = expressAsyncHandler(async (req, res) => {
+  try {
+    const data = await AdminPanel.find();
+    res
+      .status(200)
+      .json({ message: "See All userDetails", data: data, status: true });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
+module.exports.addNotification = expressAsyncHandler(async (req, res) => {
+  const { UserId, notification } = req.body;
+
+  if (!notification) {
+    res.send("fill the require filleds");
+  }
+  const ad = await AdminPanel.findOne({ UserId });
+  console.log(ad);
+  try {
+    const data = new Notification({
+      notification,
+      userId: ad,
+      role: "Admin",
+    });
+
+    const result = await data.save();
+    res
+      .status(200)
+      .json({ message: "notification sent ", data: result, userId: ad });
+  } catch (error) {
+    res.status(400).send({ msg: "ERROR", error });
+  }
+});
+
+module.exports.getNotification = expressAsyncHandler(async (req, res) => {
+  try {
+    const data = await Notification.find();
+    res
+      .status(200)
+      .json({ message: "See All notifications", data: data, status: true });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ msg: "ERROR", error });
+  }
+});

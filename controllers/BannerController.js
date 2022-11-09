@@ -4,7 +4,7 @@ const ObjectId = require("mongodb").ObjectID;
 //pos Banner--
 module.exports.addBanner = async (req, res) => {
   const banner = req.files;
-
+  const name = req.body;
   try {
     const addImage = banner.forEach(async (element) => {
       const addBanner = await Banner.create({
@@ -14,9 +14,11 @@ module.exports.addBanner = async (req, res) => {
       res.status(201).json({
         msg: "Banner successfully added",
         data: banner,
-      status:true});
+        data: addBanner,
+      });
     });
   } catch (error) {
+    res.status(500).json(error);
     console.log(error);
   }
 };
@@ -27,6 +29,7 @@ module.exports.getBanner = async (req, res) => {
     const getBanner = await Banner.find();
     res.status(200).json({ data: getBanner });
   } catch (error) {
+    res.status(500).json(error);
     console.log(error);
   }
 };
@@ -45,6 +48,7 @@ module.exports.editBanner = async (req, res) => {
     );
     res.status(200).json({ msg: "Banner successfully Updated" });
   } catch (error) {
+    res.status(500).json(error);
     console.log(error);
   }
 };
@@ -58,9 +62,10 @@ module.exports.deleteBanner = async (req, res) => {
     res.status(200).send({
       msg: "Banner deleted successfully",
       response: response,
-      status:true
-});
+      status: true,
+    });
   } catch (error) {
+    res.status(500).json(error);
     console.log(error);
   }
 };

@@ -1,8 +1,11 @@
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
+// const upload = require("./routes/bannerRoutes")
 dotenv.config({ path: ".env" });
 // require("dotenv").config();
 // const cors = require('cors');
@@ -11,9 +14,7 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use(cors());
 app.use(express.json());
-/////
-//
-console.log(process.env.PORT);
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const PORT = process.env.PORT || 5000;
 const DB_URI = process.env.DB_URI;
@@ -23,7 +24,7 @@ app.get("/url", (req, res, next) => {
 });
 
 app.use("/", require("./routes/router"));
-
+// app.use("/file", upload);
 const Main = async () => {
   try {
     await mongoose.connect(DB_URI);
