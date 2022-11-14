@@ -30,17 +30,17 @@ router.get(
   authController.GetUserProfiles
 );
 
-router.post(
-  "/user-blog",
-  upload.single("myField"),
-  isAuthenticated,
-  authController.postuserBlogs
-);
-router.patch(
-  "/edit-user-blog/:id",
-  upload.single("myField"),
-  isAuthenticated,
-  authController.UpdateBlogs
-);
+// router.post(
+//   "/user-blog",
+//   upload.single("myField"),
+//   isAuthenticated,
+//   authController.postuserBlogs
+// );
+// router.patch(
+//   "/edit-user-blog/:id",
+//   upload.single("myField"),
+//   isAuthenticated,
+//   authController.UpdateBlogs
+// );
 
 module.exports = router;
