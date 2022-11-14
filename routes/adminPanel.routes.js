@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 const adminPanelController = require("../controllers/AdminPanelController");
-const admin = require("../controllers/admin");
+const admin = require("../controllers/astrologerpanel");
 const kundli = require("../controllers/userkundliController");
 const horoscope = require("../controllers/horoscopr.controller");
 const upload = require("../controllers/middleware/uploads");

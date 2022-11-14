@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-
-const admin = require("../controllers/admin");
-
+const admin = require("../controllers/astrologerpanel");
 const { isAuthenticated } = require("../controllers/auth.controller");
+const addTime = require("../controllers/astrologerTimeSlot");
 
 const app = require("express");
 const path = require("path");
@@ -27,6 +26,19 @@ router.post("/verifyotp", admin.verifyOTP);
 router.get("/getdetails", admin.getAllUsersDetails);
 router.put("/changepassword/:id/:token", admin.changePassword);
 
+router.post("/notification", isAuthenticated, admin.addNotification);
+router.get("/notification", isAuthenticated, admin.getNotification);
+
+router.post("/addtime", isAuthenticated, addTime.addAstrologerTime);
+router.put("/updatetime/:id", isAuthenticated, addTime.updateTime);
+router.delete("/deletetime/:id", isAuthenticated, addTime.deleteTime);
+router.get("/gettime", isAuthenticated, addTime.getTime);
+router.post(
+  "/upload-documents",
+  isAuthenticated,
+  addTime.uploadAstrologerDocuments
+);
+
 // router.get("/search-user", isAuthenticated, admin.allUsers);
 // router.post(
 //   "/user-blog",
@@ -44,8 +56,4 @@ router.put("/changepassword/:id/:token", admin.changePassword);
 // router.delete("/remove-blog/:id", isAuthenticated, admin.RemovedBlogs);
 // router.post("/add-feedback", isAuthenticated, admin.UserFeedback);
 // router.get("/view-feedback", isAuthenticated, admin.ViewAllFeedback);
-
-router.post("/notification", isAuthenticated, admin.addNotification);
-router.get("/notification", isAuthenticated, admin.getNotification);
-
 module.exports = router;

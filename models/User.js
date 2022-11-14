@@ -1,34 +1,55 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema({
-  mobile_Number: {type: String,required: true},
+const userSchema = new mongoose.Schema(
+  {
+    mobile_Number: {
+      type: String,
+      required: true,
+      unique: true,
+    },
 
-  otp: {type: String,required: true},
-  
-  first_Name: {type: String,required: false},
+    first_Name: {
+      type: String,
+      required: true,
+    },
 
-  last_Name:{type:String},
+    last_Name: {
+      type: String,
+      required: true,
+    },
 
-  gender:{type:String},
+    gender: {
+      type: String,
+      lowercase: true,
+      required: true,
+      enum: ["male", "female", "Male", "Female"],
+    },
 
-  time_of_Birth:{type:String},
+    date_of_Birth: { type: Date },
 
-  place_of_Birth:{type:String},
+    place_of_Birth: { type: String },
 
-  profile_Images:{type:String},
+    profile_Images: { type: String },
 
-  ReferCode:{type:String},
+    Experience: { type: String },
 
- 
-},
+    Skills: [{ type: String }],
+
+    AboutMe: { type: String, trim: true },
+
+    User_Name: { type: String, unique: true, trim: true },
+
+    User_Images: [{ type: String }],
+
+    Languages: [{ type: String }],
+
+    ReferCode: { type: String },
+
+    ActiveNotification: { type: Boolean, default: false },
+  },
 
   { timestamps: true }
 );
 
-
-
-
-
-module.exports = mongoose.model('User', userSchema);
-
+module.exports = mongoose.model("User", userSchema);

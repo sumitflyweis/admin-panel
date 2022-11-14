@@ -1,11 +1,15 @@
 const User = require("../models/User");
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
+const accountSid = "ACb21a2250e0bae3a0e1c15eddd3c370ed";
+const authToken = "2a04b800999f898232197a811f68f90b";
+const verifySid = "VA84bc752a91abcf7df9f31c76832bafff";
 const client = require("twilio")(accountSid, authToken);
 const jwt = require("jsonwebtoken");
 const JWTkey = "rubi";
+const AppError = require("../utils/AppError");
+const catchAsync = require("../utils/catchAsync");
 const otp = require("../services/OTP");
 const blog = require("../models/blog");
+// const { status } = require('express/lib/response');
 
 const generateJwtToken = (id) => {
   return jwt.sign({ id }, JWTkey, {
@@ -13,21 +17,127 @@ const generateJwtToken = (id) => {
   });
 };
 
-const sendSMS = async (to, otp) => {
-  const from = "+19287568632";
-  await client.messages
-    .create({
-      body: otp,
-      from: from,
-      to: to,
+const createSendToken = (user, statusCode, res) => {
+  const token = generateJwtToken(user._id);
+
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("jwt", token, cookieOptions);
+  console.log("After cookie");
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
+exports.sendOTP = async (req, res) => {
+  await client.verify.v2
+    .services(verifySid)
+    .verifications.create({
+      to: `+91${req.body.mobile_Number}`,
+      channel: "sms",
     })
-    .then((message) => {
-      console.log(message.sid);
-      return message;
+    .then((data) => {
+      res.status(200).send(data);
+      console.log("sent OTP!");
+    })
+    .catch((err) => {
+      console.log(err);
+      return next(new AppError(`Couldn't send OTP`, 401));
     });
 };
 
-exports.isAuthenticated = (req, res, next) => {
+exports.verifyOTP = async (req, res) => {
+  await client.verify.v2
+    .services(verifySid)
+    .verificationChecks.create({
+      to: `+91${req.body.mobile_Number}`,
+      code: req.body.otp,
+    })
+    .then((data) => {
+      res.status(200).send({
+        status: data.status,
+      });
+      console.log("verified! 👍");
+    })
+    .catch((err) => {
+      res.status(401).json({
+        message: "Wrong OTP entered!",
+      });
+      console.log("wrong OTP !!");
+    });
+};
+
+exports.verifyOTPSignedIn = async (req, res, next) => {
+  const user = await User.findOne({ mobile_Number: req.body.mobile_Number });
+
+  await client.verify
+    .services(verifySid)
+    .verificationChecks.create({
+      to: `+91${req.body.mobile_Number}`,
+      code: req.body.otp,
+    })
+    .then((data) => {
+      createSendToken(user, 201, res);
+      console.log("verified! 👍", data);
+    })
+    .catch((err) => {
+      console.log("wrong OTP !!", err);
+      res.status(401).json({
+        status: "Failed",
+        message: err.message,
+      });
+    });
+};
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Getting Token & check if its there!
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
+  if (!token) {
+    return next(
+      new AppError("You are not logged in!, please login to get access!", 401)
+    );
+  }
+
+  // 2) Verification of Token
+  const decoded = await promisify(jwt.verify)(token, JWTkey);
+
+  // 3) Check if user still exists.
+  const currentUser = await User.findById(decoded.id);
+
+  if (!currentUser) {
+    return next(
+      new AppError("The user belonging to this token no  longer Exists!", 401)
+    );
+  }
+
+  req.user = currentUser;
+  res.locals.user = currentUser;
+  next();
+});
+
+exports.isAuthenticated = async (req, res, next) => {
   if (req.headers.authorization) {
     console.log("entered authorization");
     const token = req.headers.authorization.split(" ")[1];
@@ -39,55 +149,33 @@ exports.isAuthenticated = (req, res, next) => {
   }
 };
 
-exports.userMiddleware = (req, res, next) => {
+exports.userMiddleware = async (req, res, next) => {
   console.log(req.user);
-  User.findById(req.user).exec((err, user) => {
-    if (user) {
-      next();
-    }
-    if (err) {
-      return res.status(400).json({
-        message: "User access denied",
-      });
-    }
-  });
+  const user = await User.findById(req.user);
+  if (!user) {
+    return res.status(404).json({
+      status: "failed",
+      message: "Please login to get access",
+    });
+  } else {
+    next();
+  }
 };
 
 // Verify
-module.exports.verify_Mobile_Number = async (req, res) => {
-  const { mobile_Number, otp } = req.body;
-  const user = await User.findOne({ mobile_Number });
-  if (!user) res.send("User not found");
-  if (user && user.otp !== otp)
-    res.status(400).json({ message: "Invalid otp" });
-  const token = generateJwtToken(user._id);
-  res.status(200).json({ token });
-};
 
 module.exports.signUpUser = async (req, res) => {
-  const { mobile_Number } = req.body;
-  let Existing = await User.findOne({ mobile_Number });
-  const otpGenerated = Math.floor(100000 + Math.random() * 900000);
-  if (Existing) {
-    Existing.otp = otpGenerated;
-    const existinguser = await Existing.save();
-    sendSMS(`+91${mobile_Number}`, otpGenerated);
-    if (existinguser) res.status(200).json(existinguser);
-    res.status(400).json({ message: "no otp" });
-  } else {
-    const ReferCode = otp.generateOTP();
-    const newUser = await User.create({
-      mobile_Number,
-      otp: otpGenerated,
-      ReferCode,
-    });
-    // const wallet = await Wallet.create({})
-    // const notification = await Notifications.create({})
+  const user = await User.create(req.body);
 
-    sendSMS(`+91${mobile_Number}`, otpGenerated);
-    if (!newUser) res.status(400).json({ message: "Unable to sign you up" });
-    res.status(200).json(newUser);
-  }
+  createSendToken(user, 201, res);
+};
+
+exports.logout = (req, res) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: "success" });
 };
 
 //patch api
@@ -96,36 +184,37 @@ module.exports.updateUserProfile = async (req, res) => {
     first_Name,
     last_Name,
     gender,
-    time_of_Birth,
+    date_of_Birth,
     place_of_Birth,
     profile_Images,
   } = req.body;
-  console.log("req.user", req.user);
   if (
     !(
       first_Name &&
       last_Name &&
       gender &&
-      time_of_Birth &&
+      date_of_Birth &&
       place_of_Birth &&
       profile_Images
     )
   )
-    res.status(400).json({ message: "Reuired fields" });
+    res.status(400).json({ message: "Required fields" });
   // let u = await User.find({_id:req.user})
   // res.send(u)
   const UpdateUser = await User.findByIdAndUpdate(req.user, {
     first_Name,
     last_Name,
     gender,
-    time_of_Birth,
+    date_of_Birth,
     place_of_Birth,
     profile_Images,
   });
+
   if (!UpdateUser)
     res.status(400).json({ message: "Enter the correct Id", status: false });
+
   res.status(200).json({
-    message: "Udpate is successfully",
+    message: "Update is successfull",
     status: true,
     UpdateUser,
   });
@@ -134,7 +223,7 @@ module.exports.updateUserProfile = async (req, res) => {
 // /get api
 
 module.exports.GetUserProfiles = async (req, res, next) => {
-  console.log(req.user);
+  // console.log(req.user);
   try {
     const UpdateUser = await User.findById(req.user);
     return res.status(200).json({
@@ -190,28 +279,27 @@ module.exports.postuserBlogs = async (req, res) => {
 module.exports.UpdateBlogs = async (req, res) => {
   let photo = req.body;
   photo["blog_Images"] = [req.file.originalname];
-  let { Date, User_Name, sub_Title, Intro, blog_Images } = req.body;
+  // console.log(photo);
+  let { Date, User_Name, sub_Title, Intro, blog_Images } = photo;
 
-  try {
-    if (!(Date && User_Name && sub_Title && Intro && blog_Images)) {
-      res.json({ message: "All fields are required", status: false });
-    } else {
-      const updatedBlogs = await blog.findByIdAndUpdate(
-        { _id: req.params.id },
-        {
-          User_Name,
-          Date,
-          sub_Title,
-          Intro,
-          blog_Images,
-        }
-      );
-      if (!updatedBlogs) {
-        res.send("Unable to update Blogs");
+  if (!(Date && User_Name && sub_Title && Intro && blog_Images)) {
+    res.status(400).json({ message: "All fields are required", status: false });
+  } else {
+    const updatedBlogs = await blog.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        User_Name,
+        Date,
+        sub_Title,
+        Intro,
+        blog_Images,
       }
-      res.send(updatedBlogs);
+    );
+    if (!updatedBlogs) {
+      res.send("Unable to update Blogs");
     }
-  } catch {}
+    res.send(updatedBlogs);
+  }
 };
 
-//
+

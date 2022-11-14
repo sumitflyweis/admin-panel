@@ -10,9 +10,10 @@ router.use("/Conection", require("./conectionRoutes"));
 router.use("/horoscope", require("./horoscopeRoutes"));
 router.use("/message", require("./message.routes"));
 router.use("/specification", require("./specificationRoutes"));
-router.use("/admin", require("./admin"));
+router.use("/astrologer", require("./admin"));
 router.use("/banner", require("./bannerRoutes"));
 // router.use("/notification", require("./usersettingRoutes"));
 router.use("/adminPanel", require("./adminPanel.routes"));
-
+router.use("/user", require("./userRoutes"));
+router.use("/support", require("./supportRoute"));
 module.exports = router;

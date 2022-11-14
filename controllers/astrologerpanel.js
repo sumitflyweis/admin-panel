@@ -306,19 +306,19 @@ module.exports.login = async (req, res) => {
 //   }
 // };
 
-// module.exports.allUsers = async (req, res) => {
-//   const keyword = req.query.search
-//     ? {
-//         $or: [
-//           { name: { $regex: req.query.search, $options: "i" } },
-//           { email: { $regex: req.query.search, $options: "i" } },
-//         ],
-//       }
-//     : {};
+module.exports.allUsers = async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
 
-//   const users = await Admin.find(keyword);
-//   res.send(users);
-// };
+  const users = await Admin.find(keyword);
+  res.send(users);
+};
 
 module.exports.addNotification = expressAsyncHandler(async (req, res) => {
   const { UserId, notification } = req.body;
