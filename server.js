@@ -14,14 +14,9 @@ const path = require("path");
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
-<<<<<<< HEAD
-app.use(bodyParser.urlencoded({ extended: false }));
-
-=======
 app.use(cors());
 //var upload = multer({ storage: storage });
 //
->>>>>>> 4dc54ce16a8aa0a2273f2ae592d785a3b13e179d
 const PORT = process.env.PORT || 5000;
 const DB_URI = process.env.DB_URI;
 //check
@@ -30,10 +25,6 @@ app.get("/url", (req, res, next) => {
 });
 
 app.use("/", require("./routes/router"));
-<<<<<<< HEAD
-// app.use("/file", upload);
-=======
->>>>>>> 4dc54ce16a8aa0a2273f2ae592d785a3b13e179d
 const Main = async () => {
   try {
     await mongoose.connect(DB_URI);

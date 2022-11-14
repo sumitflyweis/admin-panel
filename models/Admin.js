@@ -29,33 +29,7 @@ const AdminSchema = new mongoose.Schema(
       enum: ["Admin", "Astrologer", "User"],
     },
   },
-<<<<<<< HEAD
   { timestamps: true }
 );
-=======
-  mobile_Number: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  created: {
-    type: String,
-    default: new Date().toISOString(),
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  profile: {
-    type: String,
-    required: false,
-  },
-  email_ID: {
-    type: String,
-    required: false,
-    unique: true,
-  },
-});
->>>>>>> 4dc54ce16a8aa0a2273f2ae592d785a3b13e179d
 
 module.exports = mongoose.model("admin", AdminSchema);

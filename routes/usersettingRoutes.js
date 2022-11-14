@@ -1,5 +1,4 @@
 // const router = require("express").Router();
-// const express = require("express");
 
 // const notification = require("../controllers/NotificationController");
 // const { isAuthenticated } = require("../controllers/auth.controller");
