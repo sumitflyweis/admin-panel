@@ -19,7 +19,7 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
-router.post("/login-admin", admin.login);
+router.post("/login", admin.login);
 router.post("/signup", admin.signUpUser);
 router.post("/resetpassword", admin.resetPassword);
 router.post("/verifyotp", admin.verifyOTP);
