@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
 
     AboutMe: { type: String, trim: true },
 
-    User_Name: { type: String, unique: true, trim: true },
+    User_Name: { type: String, trim: true },
 
     User_Images: [{ type: String }],
 
