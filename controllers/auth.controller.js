@@ -9,6 +9,10 @@ const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 const otp = require("../services/OTP");
 const blog = require("../models/blog");
+const dotenv = require("dotenv");
+const wallet = require("../models/wallet");
+
+dotenv.config({ path: "../.env" });
 // const { status } = require('express/lib/response');
 
 const generateJwtToken = (id) => {
@@ -18,8 +22,9 @@ const generateJwtToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-  const token = generateJwtToken(user._id);
-
+  const token = generateJwtToken(user._id.toString());
+  // console.log("token", token);
+  // console.log(process.env.JWT_COOKIE_EXPIRES_IN);
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -30,8 +35,7 @@ const createSendToken = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
   res.cookie("jwt", token, cookieOptions);
-  console.log("After cookie");
-  user.password = undefined;
+  // console.log("After cookie");
 
   res.status(statusCode).json({
     status: "success",
@@ -82,7 +86,7 @@ exports.verifyOTP = async (req, res) => {
 
 exports.verifyOTPSignedIn = async (req, res, next) => {
   const user = await User.findOne({ mobile_Number: req.body.mobile_Number });
-
+  console.log(user);
   await client.verify
     .services(verifySid)
     .verificationChecks.create({
@@ -166,7 +170,7 @@ exports.userMiddleware = async (req, res, next) => {
 
 module.exports.signUpUser = async (req, res) => {
   const user = await User.create(req.body);
-
+  await wallet.create({ user: user._id });
   createSendToken(user, 201, res);
 };
 
@@ -184,36 +188,37 @@ module.exports.updateUserProfile = async (req, res) => {
     first_Name,
     last_Name,
     gender,
-    time_of_Birth,
+    date_of_Birth,
     place_of_Birth,
     profile_Images,
   } = req.body;
-  console.log("req.user", req.user);
   if (
     !(
       first_Name &&
       last_Name &&
       gender &&
-      time_of_Birth &&
+      date_of_Birth &&
       place_of_Birth &&
       profile_Images
     )
   )
-    res.status(400).json({ message: "Reuired fields" });
+    res.status(400).json({ message: "Required fields" });
   // let u = await User.find({_id:req.user})
   // res.send(u)
   const UpdateUser = await User.findByIdAndUpdate(req.user, {
     first_Name,
     last_Name,
     gender,
-    time_of_Birth,
+    date_of_Birth,
     place_of_Birth,
     profile_Images,
   });
+
   if (!UpdateUser)
     res.status(400).json({ message: "Enter the correct Id", status: false });
+
   res.status(200).json({
-    message: "Udpate is successfully",
+    message: "Update is successfull",
     status: true,
     UpdateUser,
   });
@@ -262,7 +267,7 @@ module.exports.postuserBlogs = async (req, res) => {
           .json({ message: "User Blogs  is not created", status: false });
       } else {
         res.status(200).json({
-          message: "User Bloges is created successfully",
+          message: "User Blog is created successfully",
           data: getResponce,
           status: true,
         });
@@ -279,32 +284,26 @@ module.exports.UpdateBlogs = async (req, res) => {
   let photo = req.body;
   photo["blog_Images"] = [req.file.originalname];
   // console.log(photo);
-  let { Date, User_Name, sub_Title, Intro, blog_Images } = req.body;
+  let { Date, User_Name, sub_Title, Intro, blog_Images } = photo;
 
-  try {
-    if (!(Date && User_Name && sub_Title && Intro && blog_Images)) {
-      res.json({ message: "All fields are required", status: false });
-    } else {
-      const updatedBlogs = await blog.findByIdAndUpdate(
-        { _id: req.params.id },
-        {
-          User_Name,
-          Date,
-          sub_Title,
-          Intro,
-          blog_Images,
-        }
-      )};
-      if (!updatedBlogs) {
-        res.send("Unable to update Blogs");
+  if (!(Date && User_Name && sub_Title && Intro && blog_Images)) {
+    res.status(400).json({ message: "All fields are required", status: false });
+  } else {
+    const updatedBlogs = await blog.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        User_Name,
+        Date,
+        sub_Title,
+        Intro,
+        blog_Images,
       }
-      res.send(updatedBlogs);
+    );
+    if (!updatedBlogs) {
+      res.send("Unable to update Blogs");
+    }
+    res.send(updatedBlogs);
   }
-  catch(e){
+};
 
-  }
-    
-  }
-
-
-
+//
