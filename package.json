@@ -1,9 +1,6 @@
 {
   "name": "master-blog",
   "version": "1.0.0",
-  "engines": {
-    "node": "16.15.0"
-  },
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,6 +19,7 @@
     "claudia-bot-builder": "^4.5.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
+    "debug": "^4.3.4",
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "express-async-handler": "^1.2.0",
