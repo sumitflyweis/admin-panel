@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "engines": {
     "node": "16.x",
-    "npm" : "8.19.1"
+    "npm": "8.19.1"
   },
   "description": "",
   "main": "index.js",
@@ -33,7 +33,6 @@
     "mongodb": "^4.5.0",
     "mongoose": "^6.1.2",
     "multer": "^1.4.5-lts.1",
-    "multer-gridfs-storage": "^5.0.2",
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.16",
     "otp-generator": "^4.0.0",
