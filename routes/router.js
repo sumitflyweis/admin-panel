@@ -1,10 +1,9 @@
 const router = require("express").Router();
 
 router.use("/auth", require("./auth.route"));
-router.use("/", require("./userRoutes"));
+router.use("/user", require("./userRoutes"));
 router.use("/kundli", require("./userKundli.routes"));
 router.use("/chats", require("./chatRoutes"));
-router.use("/user", require("./userdetailsRoutes"));
 router.use("/discount", require("./discounts"));
 router.use("/Conection", require("./conectionRoutes"));
 router.use("/horoscope", require("./horoscopeRoutes"));
