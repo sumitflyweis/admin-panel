@@ -1,5 +1,8 @@
 const bookidgen = require("bookidgen");
+const Notification = require("../models/notification");
+const expressAsyncHandler = require("express-async-handler");
 // const Banner = require('../models/Banner')
+const crypto = require("crypto");
 const moment = require("moment");
 // const product = require('../models/product')
 const { encrypt, compare } = require("../services/crypto");
@@ -13,6 +16,8 @@ const bcrypt = require("bcrypt");
 const Admin = require("../models/Admin");
 const blog = require("../models/blog");
 const feedback = require("../models/feedback");
+const nodemailer = require("nodemailer");
+const Token = require("../models/token.model");
 
 const sendSMS = async (to, otp) => {
   const from = "+19287568632";
@@ -229,13 +234,11 @@ module.exports.UserFeedback = async (req, res) => {
     } else {
       const NewUserFeedback = await feedback.create({ UserId, Feedback });
       if (NewUserFeedback)
-        res
-          .status(200)
-          .json({
-            message: "UserFeedback Send",
-            data: NewUserFeedback,
-            status: true,
-          });
+        res.status(200).json({
+          message: "UserFeedback Send",
+          data: NewUserFeedback,
+          status: true,
+        });
       res
         .status(400)
         .json({ message: "UserFeedback  not send", status: false });
@@ -250,13 +253,11 @@ module.exports.UserFeedback = async (req, res) => {
 module.exports.ViewAllFeedback = async (req, res) => {
   try {
     const SendFeedback = await feedback.find();
-    res
-      .status(200)
-      .json({
-        message: "See All Feedback",
-        Feedback: SendFeedback,
-        status: true,
-      });
+    res.status(200).json({
+      message: "See All Feedback",
+      Feedback: SendFeedback,
+      status: true,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -275,3 +276,170 @@ module.exports.allUsers = async (req, res) => {
   const users = await Admin.find(keyword);
   res.send(users);
 };
+
+var OTP = Math.random();
+OTP = OTP * 1000000;
+OTP = parseInt(OTP);
+console.log(OTP);
+var transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  secure: true,
+  service: "Gmail",
+  port: 465,
+  auth: {
+    user: "node3@flyweis.technology",
+    pass: "node3@901#",
+  },
+});
+// testing success
+transporter.verify((error, success) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Ready for messages");
+    console.log(success);
+  }
+});
+var otpToken;
+var userId;
+module.exports.resetPassword = async (req, res) => {
+  let email_ID = req.body.email_ID;
+  if (!email_ID) {
+    res.send("fill email");
+  }
+  const user = await Admin.findOne({ email_ID });
+  let token = await Token.findOne({ userId: user._id });
+  if (!token) {
+    token = await new Token({
+      userId: user._id,
+      token: crypto.randomBytes(32).toString("hex"),
+    }).save();
+  }
+  console.log(token.token);
+
+  otpToken = token.token;
+  userId = user._id;
+  if (!user) {
+    res.status(500).send("User not exist");
+  }
+  try {
+    var mailOptions = {
+      to: email_ID,
+      subject: "OTP for verification is: ",
+      html:
+        "<h3>OTP for account verification is </h3>" +
+        "<h1 style='font-weight:bold;'>" +
+        OTP +
+        "<h3>userId </h3>" +
+        "<br></br>" +
+        user._id +
+        "<br></br>" +
+        "<h3>token </h3>" +
+        token.token +
+        "</h1>", // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.log(error);
+      }
+      console.log("Message sent: %s", info.messageId);
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    });
+
+    res.status(200).send("OTP send successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ msg: "ERROR", error });
+  }
+};
+
+module.exports.verifyOTP = expressAsyncHandler(async (req, res) => {
+  // if (!OTPs) {
+  //   res.send("OTP required");
+  // }
+
+  var token = otpToken;
+  const userID = userId;
+  if (!req.body.OTP) {
+    res.send("OTP required");
+  }
+
+  if (req.body.OTP == OTP) {
+    res.status(200).send({
+      msg: "You has been successfully verified OTP ",
+      token: token,
+      userId: userID,
+    });
+  } else {
+    res.status(500).send({ msg: "OTP is incorrect" });
+  }
+});
+
+module.exports.changePassword = expressAsyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const { password, confirmPassword } = req.body;
+  if (!(password && confirmPassword)) {
+    res.send("filleds required");
+  }
+
+  const user = await Admin.findById(id);
+
+  if (!user) return res.status(400).send("invalid link or expired");
+  try {
+    if (password != confirmPassword) {
+      res.send("Password should be same");
+    }
+
+    const token = await Token.findOne({
+      userId: user._id,
+      token: req.params.token,
+    });
+    if (!token) return res.send("Invalid link or expired");
+
+    user.password = req.body.password;
+    await user.save();
+    await token.delete();
+
+    res.status(200).send({ msg: "password reset successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ msg: "ERROR", error });
+  }
+});
+
+module.exports.addNotification = expressAsyncHandler(async (req, res) => {
+  const { UserId, notification } = req.body;
+
+  if (!notification) {
+    res.send("fill the require filleds");
+  }
+  const ad = await AdminPanel.findOne({ UserId });
+  console.log(ad);
+  try {
+    const data = new Notification({
+      notification,
+      userId: ad,
+      role: "Admin",
+    });
+
+    const result = await data.save();
+    res
+      .status(200)
+      .json({ message: "notification sent ", data: result, userId: ad });
+  } catch (error) {
+    res.status(400).send({ msg: "ERROR", error });
+  }
+});
+
+module.exports.getNotification = expressAsyncHandler(async (req, res) => {
+  try {
+    const data = await Notification.find();
+    res
+      .status(200)
+      .json({ message: "See All notifications", data: data, status: true });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ msg: "ERROR", error });
+  }
+});

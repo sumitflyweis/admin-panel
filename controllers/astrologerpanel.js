@@ -18,15 +18,15 @@ const crypto = require("crypto");
 
 //SignUP
 
-function ValidateEmail(mail) {
-  if (
-    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(myForm.emailAddr.value)
-  ) {
-    return true;
-  }
-  alert("You have entered an invalid email address!");
-  return false;
-}
+// function ValidateEmail(mail) {
+//   if (
+//     /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(myForm.emailAddr.value)
+//   ) {
+//     return true;
+//   }
+//   alert("You have entered an invalid email address!");
+//   return false;
+// }
 
 module.exports.signUpUser = async (req, res) => {
   const { user_Name, email_ID, mobile_Number, password, profile } = req.body;
@@ -446,13 +446,11 @@ module.exports.verifyOTP = expressAsyncHandler(async (req, res) => {
   }
 
   if (req.body.OTP == OTP) {
-    res
-      .status(200)
-      .send({
-        msg: "You has been successfully verified OTP ",
-        token: token,
-        userId: userID,
-      });
+    res.status(200).send({
+      msg: "You has been successfully verified OTP ",
+      token: token,
+      userId: userID,
+    });
   } else {
     res.status(500).send({ msg: "OTP is incorrect" });
   }

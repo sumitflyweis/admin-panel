@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const specificationSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "admin",
+      unique: true,
+      required: true,
+    },
     specification: {
       type: String,
       required: true,

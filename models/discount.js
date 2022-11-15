@@ -9,6 +9,12 @@ const discountschema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "admin",
+    unique: true,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Discount", discountschema);

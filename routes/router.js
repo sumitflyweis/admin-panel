@@ -9,7 +9,7 @@ router.use("/Conection", require("./conectionRoutes"));
 router.use("/horoscope", require("./horoscopeRoutes"));
 router.use("/message", require("./message.routes"));
 router.use("/specification", require("./specificationRoutes"));
-router.use("/admin-auth", require("./admin"));
+router.use("/admin", require("./admin"));
 router.use("/banner", require("./bannerRoutes"));
 router.use("/support", require("./supportRoute"));
 // router.use("/notification", require("./usersettingRoutes"));

@@ -3,7 +3,13 @@ const Discount = require("../models/discount");
 module.exports.discount = async (req, res) => {
   try {
     let { productName, discount } = req.body;
-    let getDetails = await Discount.create({ productName, discount });
+
+    console.log(req.user);
+    let getDetails = await Discount.create({
+      user: req.user,
+      productName,
+      discount,
+    });
     res.status(200).json({
       message: "discount is Created successfully",
       getDetails,
