@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const admin = require("../controllers/admin");
+const admin = require("../controllers/AstrologerPanel.controller");
 const { isAuthenticated } = require("../controllers/auth.controller");
 const addTime = require("../controllers/astrologerTimeSlot");
 

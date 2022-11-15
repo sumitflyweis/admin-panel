@@ -1,5 +1,5 @@
 const Discount = require("../models/discount");
-const Admin = require("../models/Admin");
+const Admin = require("../models/astrologerSchema");
 module.exports.discount = async (req, res) => {
   try {
     let { productName, discount } = req.body;

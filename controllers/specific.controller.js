@@ -1,4 +1,4 @@
-const Admin = require("../models/Admin");
+const Admin = require("../models/astrologerSchema");
 const Specific = require("../models/specification");
 module.exports.addSpecification = async (req, res) => {
   try {

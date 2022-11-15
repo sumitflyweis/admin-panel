@@ -1,12 +1,23 @@
 const Kundli = require("../models/userKundli");
 
 module.exports.addUserKundli = async (req, res) => {
+  console.log(req.file.path);
+  const path = req.file.path;
   try {
     let { Image, userName, action } = req.body;
-    if (!(Image && userName && action)) {
+    if (!(userName && action)) {
       res.status(400).json("required filleds is occured");
     }
-    let getDetails = await Kundli.create({ Image, userName, action });
+    var finalImg = {
+      data: req.file.path,
+      contentType: "image/jpg",
+    };
+    let getDetails = await Kundli.create({
+      Image: finalImg,
+      userName,
+      action,
+      image: path,
+    });
     res.status(200).json({
       message: "kundli is Created successfully",
       getDetails,
@@ -19,12 +30,18 @@ module.exports.addUserKundli = async (req, res) => {
 module.exports.updateKundli = async (req, res) => {
   let { Image, userName, action } = req.body;
   const id = req.params.id;
+  const path = req.file.path;
 
+  var finalImg = {
+    data: req.file.path,
+    contentType: "image/jpg",
+  };
   try {
     const data = await Kundli.findByIdAndUpdate(id, {
-      Image,
+      Image: finalImg,
       userName,
       action,
+      image: path,
     });
     res.status(200).json({ message: "Udpate is successfully", data });
   } catch (error) {

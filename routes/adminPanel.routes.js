@@ -5,8 +5,6 @@ const adminPanelController = require("../controllers/AdminPanelController");
 const admin = require("../controllers/astrologerpanel");
 const kundli = require("../controllers/userkundliController");
 const horoscope = require("../controllers/horoscopr.controller");
-const upload = require("../controllers/middleware/uploads");
-
 router.post("/register", adminPanelController.registerUser);
 router.post("/login", adminPanelController.authUser);
 router.get("/", adminPanelController.getAdminDetail);
@@ -75,17 +73,6 @@ router.post(
   adminPanelController.isAuthenticated2,
   adminPanelController.addNotification
 );
-
-
-
-
-
-
-
-
-
-
-
 
 router.get(
   "/notification",

@@ -1,4 +1,4 @@
-const Admin = require("../models/Admin");
+const Admin = require("../models/astrologerSchema");
 const Chat = require("../models/chat.model");
 
 module.exports.createChat = async (req, res) => {
