@@ -24,6 +24,7 @@ app.get("/url", (req, res, next) => {
   res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
 });
 
+//  checking all the git
 app.use("/", require("./routes/router"));
 const Main = async () => {
   try {
