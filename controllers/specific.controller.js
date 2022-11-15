@@ -1,16 +1,20 @@
+const Admin = require("../models/Admin");
 const Specific = require("../models/specification");
 module.exports.addSpecification = async (req, res) => {
   try {
     console.log(req.user);
     let { specification, data } = req.body;
-    let getDetails = await Specific.create({
-      user: req.user,
-      specification,
-      data,
+    let data2 = await Admin.findOne({ user: req.user });
+    let getDetails = new Specific({
+      user: data2,
+      specification: specification,
+      data: data,
     });
+
+    let data1 = await getDetails.save();
     res.status(200).json({
       message: "Specific is Created successfully",
-      getDetails,
+      data1,
     });
   } catch (error) {
     console.log(error);

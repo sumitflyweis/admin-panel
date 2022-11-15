@@ -1,12 +1,13 @@
 const Discount = require("../models/discount");
-
+const Admin = require("../models/Admin");
 module.exports.discount = async (req, res) => {
   try {
     let { productName, discount } = req.body;
 
     console.log(req.user);
+    let data2 = await Admin.findOne({ user: req.user });
     let getDetails = await Discount.create({
-      user: req.user,
+      user: data2,
       productName,
       discount,
     });
@@ -15,6 +16,7 @@ module.exports.discount = async (req, res) => {
       getDetails,
     });
   } catch (e) {
+    console.log(e);
     res.status(400).json("Error is occured");
   }
 };

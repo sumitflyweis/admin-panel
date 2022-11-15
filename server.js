@@ -1,4 +1,3 @@
-
 const express = require("express");
 const cors = require("cors");
 // var multer = require('multer');
@@ -17,6 +16,7 @@ app.use(express.json());
 app.use(cors());
 //var upload = multer({ storage: storage });
 //
+app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 5000;
 const DB_URI = process.env.DB_URI;
 //check
